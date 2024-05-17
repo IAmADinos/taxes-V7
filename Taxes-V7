@@ -1,0 +1,78 @@
+def calculate_tax(income, filing_status):
+    #Standard deductions for each filing status
+    standard_deductions = {
+        1: 14600,  #Single
+        2: 29200,  #married Filing Jointly - 2x filing single
+        3: 14600,  #Married Filing Separately
+        4: 21900   #Head of Household - 1 adult, 1+ kids
+    }
+    
+    #Appling the standard deduction
+    taxable_income = max(0, income - standard_deductions[filing_status])
+
+    if filing_status == 1:#Filing single
+        brackets = [
+            (11600, 0.10),
+            (47150, 0.12),
+            (100525, 0.22),
+            (191950, 0.24),
+            (243725, 0.32),
+            (609350, 0.35),
+            (float('inf'), 0.37)]
+        
+    elif filing_status == 2:#Married Filing Jointly
+        brackets = [
+            (23200, 0.10),
+            (94300, 0.12),
+            (201050, 0.22),
+            (383900, 0.24),
+            (487450, 0.32),
+            (731200, 0.35),
+            (float('inf'), 0.37)]
+        
+    elif filing_status == 3:#Married Filing Separately
+        brackets = [
+            (11600, 0.10),
+            (47150, 0.12),
+            (100525, 0.22),
+            (191950, 0.24),
+            (243725, 0.32),
+            (365600, 0.35),
+            (float('inf'), 0.37)]
+        
+    elif filing_status == 4: #Head of the household
+        brackets = [
+            (16550, 0.10),
+            (63100, 0.12),
+            (100500, 0.22),
+            (191950, 0.24),
+            (243700, 0.32),
+            (609350, 0.35),
+            (float('inf'), 0.37)]
+        
+
+    tax = 0
+    previous_limit = 0
+    for limit, rate in brackets:
+        if taxable_income > previous_limit:
+            taxable_income_in_bracket = min(taxable_income - previous_limit, limit - previous_limit)
+            tax += taxable_income_in_bracket * rate
+            previous_limit = limit
+        else:
+            break
+
+    return tax
+#The parts you will see, the main proggram
+print("Select your filing status:")
+print("1. Single")
+print("2. Married Filing Jointly")
+print("3. Married Filing Separately")
+print("4. Head of Household")
+status = int(input("Enter the number corresponding to your filing status: "))
+
+if status not in [1, 2, 3, 4]:
+    print("Error- Invalid filing status selected.")
+else:
+    income = float(input("Enter your yearly income, without commas please: $"))
+    tax_owed = calculate_tax(income, status)
+    print(f"Tax owed for an income of ${income:.2f} is ${tax_owed:.2f} mwahahahahahaha")
